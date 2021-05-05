@@ -15,6 +15,7 @@ const volumePose = document.querySelector(".settings--volume--checkbox--pose")
 const positionVolumePose = volumeLine.clientWidth - volumePose.clientWidth;
 
 music.addEventListener("loadeddata", () => {
+	console.log("da")
 	music.play()
 })
 volumePose.style.left = `${volumeInput.value*positionVolumePose/100}px`
