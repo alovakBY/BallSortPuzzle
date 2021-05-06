@@ -5,30 +5,37 @@ const settings = document.querySelector(".settings") // Контейнер на�
 const settingsBack = document.querySelector(".settings--backBtn") // Кнопка "назад" в меню настроек
 const opacity = document.querySelector(".opacity") // Контейнер class = "opacity"
 const container = document.querySelector(".container") //Контейнер class = "container"
-const music = document.querySelector("audio") // audio тег
+const music = new Audio// audio тег
 const musicSetting = document.querySelector(".settings--music") // контейнер вкл/выкл музыки
-
 const volumeSettings = document.querySelector(".settings--volume")  // контейнер увел/уменьш громкости
-const volumeInput = document.querySelector("input[type = 'range']") 
-const volumeLine = document.querySelector(".settings--volume--checkbox")
-const volumePose = document.querySelector(".settings--volume--checkbox--pose") 
-const positionVolumePose = volumeLine.clientWidth - volumePose.clientWidth;
+const volumeInput = document.querySelector("input[type = 'range']") // input громкости
+const volumeLine = document.querySelector(".settings--volume--checkbox") // Линия по которой ходит ползунок громкости
+const volumePose = document.querySelector(".settings--volume--checkbox--pose") // Ползунок громкости
+const positionVolumePose = volumeLine.clientWidth - volumePose.clientWidth
+const musicTrackList = ["sound/soundTrack/bensound-memories.mp3", "sound/soundTrack/bensound-ukulele.mp3","sound/soundTrack/bensound-cute.mp3"]
+function nextTrack(ind) {
+	music.src = `${musicTrackList[ind]}`
+	music.addEventListener("canplaythrough", () => {
+		if (!musicSetting.querySelector("input").checked) return
+		music.play()
+	})
+	music.addEventListener("ended", () => {
+		if (ind === musicTrackList.length-1) nextTrack(0)
+		else nextTrack(ind+1)
+	})
+	
+}
 
-window.addEventListener('load', () => {
-	music.src="sound/soundTrack/Alumo_-_Shining_Through.mp3"
-	music.autoplay = "autoplay"
-	console.log("da")
-});
 volumePose.style.left = `${volumeInput.value*positionVolumePose/100}px`
 music.volume = volumeInput.value/100
 
-music.loop = true
-
-buttonSettings.addEventListener("click", ()  => {
+function openSettings () {
 	settings.style.top = `25%`
 	opacity.style.zIndex = `2`
 	settings.style.zIndex = `5`
-})
+}
+
+buttonSettings.addEventListener("click", openSettings)
 
 settingsBack.addEventListener("click", () => {
 	settings.style.top = `-200%`
@@ -39,9 +46,8 @@ settingsBack.addEventListener("click", () => {
 musicSetting.addEventListener("click", () => {
 	if (!musicSetting.querySelector("input").checked) {
 		music.pause()
-		music.currentTime = 0.0
 	} else {
-		music.play()
+		nextTrack(Math.floor(Math.random()*musicTrackList.length))
 	}
 })
 
@@ -63,7 +69,6 @@ function start(e) {
 function move(e) {
 	volumeInput.value = parseInt(volumePose.style.left) / positionVolumePose*100
 	music.volume = volumeInput.value/100
-
 	volumePose.style.left = `${e.pageX - volumeLine.getBoundingClientRect().x - shiftX}px`
 	if (volumePose.getBoundingClientRect().left - volumeLine.getBoundingClientRect().left <= 0) volumePose.style.left = `0px`
 	if (volumePose.getBoundingClientRect().right - volumeLine.getBoundingClientRect().right >= 0) volumePose.style.left = `${positionVolumePose}px`
