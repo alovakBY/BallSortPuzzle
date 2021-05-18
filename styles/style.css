@@ -13,9 +13,11 @@ body {
   height: 100%;
   background-color: black;
   opacity: 0.8;
+  z-index: -2;
 }
 
 .container {
+  overflow: hidden;
   position: relative;
   height: 100%;
   max-width: 1920px;
@@ -63,7 +65,7 @@ body {
 .settings {
   padding-top: 30px;
   position: absolute;
-  top: -100vh;
+  top: -200%;
   left: 50%;
   transform: translate(-50%, 0);
   width: 600px;
@@ -258,12 +260,12 @@ div > .startGame-navigation-restart img {
   border: 3px solid rgba(255, 255, 255, 0.767);
   border-radius: 0px 0px 50px 50px;
   box-shadow: inset 0px 0px 20px rgb(112, 112, 112);
-  overflow: hidden;
   display: flex;
   justify-content: center;
   cursor: pointer;
   transform-origin: top left;
   position: relative;
+  z-index: auto;
 }
 
 .bottle::after {
@@ -281,9 +283,11 @@ div > .startGame-navigation-restart img {
   left: 10px;
 }
 
-.liquid {
+.ball {
   height: 50px;
   width: 50px;
   border-radius: 50%;
   position: absolute;
+  z-index: -1;
+  transition: 0.2s;
 }
