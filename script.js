@@ -18,6 +18,8 @@ const volumePose = document.querySelector(".settings--volume--checkbox--pose") /
 const musicTrackList = ["sound/soundTrack/bensound-memories.mp3", "sound/soundTrack/bensound-ukulele.mp3","sound/soundTrack/bensound-cute.mp3"] // трек-лист
 buttonStartGame.textContent = "Играть"
 
+soundFinishBottle.load()
+soundFinishLvl.load()
 
 // Функция открыть настройки
 function openSettings () {
@@ -157,7 +159,6 @@ windowGameSettings.addEventListener("click", openSettings)
 // Старт игры
 
 function startGame(lvl,nextLvl) {
-	console.log(lvl,nextLvl)
 // Функция отрисовки пробирок и шариков
 	coupleOfBootles = []
 	const amountColors = lvl + 1
