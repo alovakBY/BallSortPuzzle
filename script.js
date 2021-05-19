@@ -44,7 +44,6 @@ function nextTrack(ind) {
 function sounds(sound) {
 	if (soundSetting.querySelector("input").checked) {
 		sound.load()
-		sound.play()
 		sound.addEventListener("canplaythrough", () => {
 			sound.play()
 		})
