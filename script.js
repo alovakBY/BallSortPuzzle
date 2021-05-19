@@ -3,24 +3,36 @@ const buttonStartGame = document.querySelector(".startBtn") // Старт игр
 const buttonSettings = document.querySelector(".settingsBtn") // Кнопка вызова меню настроек
 const settings = document.querySelector(".settings") // Контейнер настроек
 const settingsBack = document.querySelector(".settings--backBtn") // Кнопка "назад" в меню настроек
-const opacity = document.querySelector(".opacity") // Контейнер class = "opacity"
+const opacity08 = document.querySelector(".opacity08") // Контейнер class = "opacity0.8"
+const opacity = document.querySelector(".opacity") // Контейнер class = "opacity0.8"
 const container = document.querySelector(".container") //Контейнер class = "container"
 const music = new Audio// audio тег
+const soundFinishBottle = new Audio(`/sound/finishBottle.mp3`)
+const soundFinishLvl = new Audio(`/sound/finishLvl.mp3`)
 const musicSetting = document.querySelector(".settings--music") // контейнер вкл/выкл музыки
+const soundSetting = document.querySelector(".settings--sound") // контейнер вкл/выкл звуков
 const volumeSettings = document.querySelector(".settings--volume")  // контейнер увел/уменьш громкости
 const volumeInput = document.querySelector("input[type = 'range']") // input громкости
 const volumeLine = document.querySelector(".settings--volume--checkbox") // Линия по которой ходит ползунок громкости
 const volumePose = document.querySelector(".settings--volume--checkbox--pose") // Ползунок громкости
-const musicTrackList = ["sound/soundTrack/bensound-memories.mp3", "sound/soundTrack/bensound-ukulele.mp3","sound/soundTrack/bensound-cute.mp3"] // трек-лист
-
+const musicTrackList = ["/sound/soundTrack/bensound-memories.mp3", "/sound/soundTrack/bensound-ukulele.mp3","/sound/soundTrack/bensound-cute.mp3"] // трек-лист
 buttonStartGame.textContent = "Играть"
 
+soundFinishBottle.load()
+soundFinishLvl.load()
 
-// Функция, которая будет менять src по окончанию трека. 
+// Функция открыть настройки
+function openSettings () {
+	settings.style.top = `20%`
+	opacity08.style.zIndex = `2`
+	settings.style.zIndex = `5`
+}
+
+// Функция, которая запускает музыку и меняет src по окончанию трека. 
 function nextTrack(ind) {
 	music.src = `${musicTrackList[ind]}`
+	music.load()
 	music.addEventListener("canplaythrough", () => {
-		if (!musicSetting.querySelector("input").checked) return
 		music.play()
 	})
 	music.addEventListener("ended", () => {
@@ -29,24 +41,24 @@ function nextTrack(ind) {
 	})
 }
 
+// Функция срабатывания звуков
 
-
-function openSettings () {
-	settings.style.top = `20%`
-	opacity.style.zIndex = `2`
-	settings.style.zIndex = `5`
+function sounds(sound) {
+	if (soundSetting.querySelector("input").checked) sound.play()
 }
+
 
 buttonSettings.addEventListener("click", openSettings)
 
 settingsBack.addEventListener("click", () => {
 	settings.style.top = `-200%`
 	settings.style.zIndex = ``
-	opacity.style.zIndex = ``
+	opacity08.style.zIndex = ``
 }) 
 
 // Вкл./Выкл. музыки
-musicSetting.addEventListener("click", () => {
+musicSetting.addEventListener("click", (e) => {
+	if(e.target.tagName !== "INPUT") return
 	if (!musicSetting.querySelector("input").checked) {
 		music.pause()
 	} else {
@@ -54,11 +66,16 @@ musicSetting.addEventListener("click", () => {
 	}
 })
 
+
 // Настройка ползунка громкости
+
 let shiftX = 0
 const positionVolumePose = volumeLine.clientWidth - volumePose.clientWidth // расстояние по которому может ходить ползунок
 volumePose.style.left = `${volumeInput.value*positionVolumePose/100}px` // Ставим ползунок в положение, в котором стоит при загрузке input type = range
-music.volume = volumeInput.value/100 // Ставим громкость === значению input
+// Ставим громкость === значению input
+music.volume = volumeInput.value/100 
+soundFinishBottle.volume = volumeInput.value/100
+soundFinishLvl.volume = volumeInput.value/100
 
 function start(e) {
 	volumePose.style.backgroundColor = `rgb(238, 183, 81)`
@@ -74,6 +91,8 @@ function start(e) {
 function move(e) {
 	volumeInput.value = parseInt(volumePose.style.left) / positionVolumePose*100
 	music.volume = volumeInput.value/100
+	soundFinishBottle.volume = volumeInput.value/100
+	soundFinishLvl.volume = volumeInput.value/100
 	volumePose.style.left = `${e.pageX - volumeLine.getBoundingClientRect().x - shiftX}px`
 	if (volumePose.getBoundingClientRect().left - volumeLine.getBoundingClientRect().left <= 0) volumePose.style.left = `0px`
 	if (volumePose.getBoundingClientRect().right - volumeLine.getBoundingClientRect().right >= 0) volumePose.style.left = `${positionVolumePose}px`
@@ -104,8 +123,9 @@ const windowGameToMenu = document.querySelector(".startGame-navigation-mainMenu"
 const windowGameSettings = document.querySelector(".startGame-navigation-settings") // Кнопка "Настройки"
 const levelBoard = document.querySelector(".startGame-game-lvl") // Котейнер текущего уровня
 const bottles = document.querySelector(".startGame-game-bottles") // Контейнер, где находятся наши пробирки
+const confetti = document.querySelector(".confetti")// Конфетти
 let lvl = 1 // Стартовый уровень
-let coupleOfBootles // Массив, в который мы буцдем пушить две пробирки для сравнения
+let coupleOfBootles // Массив, в который мы будем пушить две пробирки для сравнения
 
 
 // Кнопка "Играть"
@@ -137,36 +157,18 @@ function startGame(lvl) {
 	const amountColors = lvl + 1
 	let amountBottle 
 	const randomColor = []
-	const colors = [
-		{
-			color: "crimson",
+	function getColor () {
+		return "#" + ((1 << 24) * Math.random() | 0).toString(16)
+	}
+	
+	for (let i = 0; i < amountColors; i++) {
+		const obj = {
+			color: getColor(),
 			number: 0,
-		},
-		{
-			color: "coral",
-			number: 0,
-		},
-		{
-			color: "goldenrod",
-			number: 0,
-		},
-		{
-			color: "darkgreen",
-			number: 0,
-		},
-		{
-			color: "aquamarine",
-			number: 0,
-		},
-		{
-			color: "cornflowerblue",
-			number: 0,
-		},
-		{
-			color: "blueviolet",
-			number: 0,
+			text: i + 1,
 		}
-	]
+		randomColor.push(obj)
+	}
 
 	while (bottles.firstChild) {
 		bottles.removeChild(bottles.firstChild);
@@ -174,6 +176,7 @@ function startGame(lvl) {
 
 	levelBoard.textContent = `Уровень ${lvl}`
 
+	// Рисуем пробирки в зависимости от количества цветов
 	if (lvl === 1) {
 		amountBottle = amountColors + 1
 	} else {
@@ -188,22 +191,14 @@ function startGame(lvl) {
 	} 
 
 	const bottle = document.querySelectorAll(".bottle")
-// Берем из массива COLORS сколько нужно для раунда цветов 
-	for (let i = 0; i < amountColors; i++) {
-		let index = Math.floor(Math.random() * (colors.length))
-		if (randomColor.includes(colors[index])) {
-			i--
-			continue
-		}
-		randomColor.push(colors[index])
-	}
 
 // Распределяем цвета по пробиркам. Берем сколько нужно цветов и делаем 4 шара каждого цвета
 	for (let i = 0; i < amountColors; i++) {
 		let getClassListBall
 		for (let j = 0; j < 4; j++) {
 			const index = Math.floor(Math.random() * (randomColor.length))
-			const ball = document.createElement("div");
+			const ball = document.createElement("div")
+			ball.textContent = `${randomColor[index].text}`
 			ball.classList.add("ball")
 			bottle[i].appendChild(ball)
 			ball.style.bottom = `${j * ball.offsetHeight}px`
@@ -272,21 +267,28 @@ bottles.addEventListener("click", (e) => {
 	}
 })
 
+
 function runBall([firstBottle, lastBottle]) {
 	const ball = firstBottle.lastChild.cloneNode(true)
-	firstBottle.lastChild.style.left = `${lastBottle.getBoundingClientRect().left - firstBottle.getBoundingClientRect().left + 2}px`
-	firstBottle.lastChild.addEventListener("transitionend", () => {
+	opacity.style.zIndex = 50
+	// Анимация движения шарика
+	let animationRunBall = firstBottle.lastChild.animate([
+		{ left: `${lastBottle.getBoundingClientRect().left - firstBottle.getBoundingClientRect().left + (lastBottle.clientWidth - firstBottle.lastChild.offsetWidth)/2}px`,
+		bottom: `${firstBottle.getBoundingClientRect().bottom - lastBottle.getBoundingClientRect().top}px`,
+	}
+	], {
+		duration: 100,
+		iterations: 1
+	})
+	firstBottle.lastChild.style.zIndex = `1`
+	animationRunBall.addEventListener("finish", () => {
+		opacity.style.zIndex = -2
 		lastBottle.appendChild(ball)
 		lastBottle.lastChild.style.bottom = `${(lastBottle.children.length - 1)*lastBottle.lastChild.offsetHeight}px`
 		firstBottle.removeChild(firstBottle.lastChild)
-		lastBottle.lastChild.addEventListener("transitionend", () => {
-			/* [...bottles.children].forEach((bottle) => {
-				if (bottle.children.length === 0) return
-				let className = bottle.children[0].className;
-				if ([...bottle.children].every(ball => ball.className === className) && bottle.children.length === 4) {
-					bottle.style.backgroundImage = 'url(img/confeti.gif)'
-				}
-			})  */
+		lastBottle.lastChild.addEventListener("transitionend", function checkPosition() {
+				if (lastBottle.children.length === 0) return
+			// Проверка, если все шарики в колбах одного цвета или в колбе нету шариков, то переходим на следующий уровень
 			if ([...bottles.children].every((bottle) => {
 				if (bottle.children.length === 0) {
 					return true
@@ -296,9 +298,31 @@ function runBall([firstBottle, lastBottle]) {
 					return  ([...bottle.children].every(ball => ball.className === className)) 
 				}
 			})) {
+				opacity.style.zIndex = 50
 				lvl++
-				startGame(lvl)
+				sounds(soundFinishLvl)
+				let animationNextLvl = levelBoard.animate([
+					{ transform: `scale(2)`,
+				}
+				], {
+					duration: 2500,
+					iterations: 1
+				})
+				animationNextLvl.addEventListener("finish", () =>{
+					opacity.style.zIndex = -2
+					startGame(lvl)
+				})
+				return
 			}
+			// Если в пробирке собраны все цвета, то на пробирке выстрелит конфетти
+			const className = lastBottle.children[0].className
+			if ([...lastBottle.children].every(ball => ball.className === className) && lastBottle.children.length === 4 && !lastBottle.classList.contains("confettiPass")) {
+				lastBottle.classList.add("confetti")
+				lastBottle.classList.add("confettiPas")
+				sounds(soundFinishBottle)
+				setTimeout(() => lastBottle.classList.remove("confetti"),1000)
+			}
+			lastBottle.lastChild.removeEventListener("transitionend", checkPosition) 
 		})
 	})
 } 
