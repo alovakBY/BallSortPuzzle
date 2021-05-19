@@ -127,14 +127,16 @@ const windowGameSettings = document.querySelector(".startGame-navigation-setting
 const levelBoard = document.querySelector(".startGame-game-lvl") // Котейнер текущего уровня
 const bottles = document.querySelector(".startGame-game-bottles") // Контейнер, где находятся наши пробирки
 const confetti = document.querySelector(".confetti")// Конфетти
+let lvlBoard = 1
 let lvl = 1 // Стартовый уровень
+let nextLvl = 1 
 let coupleOfBootles // Массив, в который мы будем пушить две пробирки для сравнения
 
 
 // Кнопка "Играть"
 buttonStartGame.addEventListener("click", (e) => {
 	if (e.target.textContent === "Играть") {
-		startGame(lvl)
+		startGame(lvl,nextLvl)
 	}
 	e.target.textContent = "Продолжить"
 	windowGame.style.left = `0%`
@@ -143,7 +145,7 @@ buttonStartGame.addEventListener("click", (e) => {
 
 
 // Кнопка рестарта раунда
-restartBtn.addEventListener("click", () => startGame(lvl)) 
+restartBtn.addEventListener("click", () => startGame(lvl,nextLvl)) 
 
 windowGameToMenu.addEventListener("click", () => {
 	windowGame.style.left = `100%`
@@ -154,7 +156,8 @@ windowGameSettings.addEventListener("click", openSettings)
 
 // Старт игры
 
-function startGame(lvl) {
+function startGame(lvl,nextLvl) {
+	console.log(lvl,nextLvl)
 // Функция отрисовки пробирок и шариков
 	coupleOfBootles = []
 	const amountColors = lvl + 1
@@ -177,7 +180,7 @@ function startGame(lvl) {
 		bottles.removeChild(bottles.firstChild);
 	}
 
-	levelBoard.textContent = `Уровень ${lvl}`
+	levelBoard.textContent = `Уровень ${lvlBoard}`
 
 	// Рисуем пробирки в зависимости от количества цветов
 	if (lvl === 1) {
@@ -219,7 +222,7 @@ function startGame(lvl) {
 			while (bottles.firstChild) {
 				bottles.removeChild(bottles.firstChild);
 			}
-			startGame(lvl)
+			startGame(lvl,nextLvl)
 		}
 	}
 }
@@ -302,7 +305,6 @@ function runBall([firstBottle, lastBottle]) {
 				}
 			})) {
 				opacity.style.zIndex = 50
-				lvl++
 				sounds(soundFinishLvl)
 				let animationNextLvl = levelBoard.animate([
 					{ transform: `scale(2)`,
@@ -313,7 +315,16 @@ function runBall([firstBottle, lastBottle]) {
 				})
 				animationNextLvl.addEventListener("finish", () =>{
 					opacity.style.zIndex = -2
-					startGame(lvl)
+					if (nextLvl === lvl) {
+						lvlBoard ++
+						lvl++
+						nextLvl = 1
+						startGame(lvl,nextLvl)
+					} else {
+						lvlBoard ++
+						nextLvl++
+						startGame(lvl,nextLvl)
+					}
 				})
 				return
 			}
