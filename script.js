@@ -132,7 +132,7 @@ const bottles = document.querySelector(".startGame-game-bottles") // Конте�
 const confetti = document.querySelector(".confetti")// Конфетти
 let ballInTheAir = false
 let lvlBoard = 1
-let lvl = 9 // Стартовый уровень
+let lvl = 1 // Стартовый уровень
 let nextLvl = 0
 let coupleOfBootles // Массив, в который мы будем пушить две пробирки для сравнения
 let returnArr = []
