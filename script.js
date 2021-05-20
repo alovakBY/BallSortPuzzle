@@ -31,10 +31,10 @@ function openSettings () {
 // Функция, которая запускает музыку и меняет src по окончанию трека. 
 function nextTrack(ind) {
 	music.src = `${musicTrackList[ind]}`
-	music.load()
-	music.play()
+	//music.load()
 	music.addEventListener("canplaythrough", () => {
 		music.play()
+		music.load()
 	})
 	music.addEventListener("ended", () => {
 		if (ind === musicTrackList.length-1) nextTrack(0)
