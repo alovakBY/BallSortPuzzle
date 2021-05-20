@@ -32,6 +32,7 @@ function openSettings () {
 function nextTrack(ind) {
 	music.src = `${musicTrackList[ind]}`
 	music.load()
+	music.play()
 	music.addEventListener("canplaythrough", () => {
 		music.play()
 	})
