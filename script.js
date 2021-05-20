@@ -48,10 +48,10 @@ function nextTrack(ind) {
 
 function sounds(sound) {
 	if (soundSetting.querySelector("input").checked) {
-		sound.load()
-		sound.addEventListener("canplaythrough", () => {
+		sound.play()
+		/* sound.addEventListener("canplaythrough", () => {
 			sound.play()
-		})
+		}) */
 	}
 }
 
