@@ -7,16 +7,16 @@ const opacity08 = document.querySelector(".opacity08") // Контейнер cla
 const opacity = document.querySelector(".opacity") // Контейнер class = "opacity0.8"
 const container = document.querySelector(".container") //Контейнер class = "container"
 const music = new Audio// audio тег
-const soundFinishBottle = new Audio(`sound/finishBottle.mp3`) // Звук, когда пробирка полна
-const soundFinishLvl = new Audio(`sound/finishLvl.mp3`) // Звук следующего уровня
-const soundBallHit = new Audio(`sound/ballHit.mp3`) // Звук "удара" мяча
+const soundFinishBottle = new Audio(`./sound/finishBottle.mp3`) // Звук, когда пробирка полна
+const soundFinishLvl = new Audio(`./sound/finishLvl.mp3`) // Звук следующего уровня
+const soundBallHit = new Audio(`./sound/ballHit.mp3`) // Звук "удара" мяча
 const musicSetting = document.querySelector(".settings--music") // контейнер вкл/выкл музыки
 const soundSetting = document.querySelector(".settings--sound") // контейнер вкл/выкл звуков
 const volumeSettings = document.querySelector(".settings--volume")  // контейнер увел/уменьш громкости
 const volumeInput = document.querySelector("input[type = 'range']") // input громкости
 const volumeLine = document.querySelector(".settings--volume--checkbox") // Линия по которой ходит ползунок громкости
 const volumePose = document.querySelector(".settings--volume--checkbox--pose") // Ползунок громкости
-const musicTrackList = ["sound/soundTrack/bensound-memories.mp3", "sound/soundTrack/bensound-ukulele.mp3","sound/soundTrack/bensound-cute.mp3"] // трек-лист
+const musicTrackList = ["./sound/soundTrack/bensound-memories.mp3", "./sound/soundTrack/bensound-ukulele.mp3","./sound/soundTrack/bensound-cute.mp3"] // трек-лист
 buttonStartGame.textContent = "Играть"
 
 
