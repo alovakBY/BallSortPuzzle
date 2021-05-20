@@ -17,8 +17,12 @@ const volumeInput = document.querySelector("input[type = 'range']") // input г�
 const volumeLine = document.querySelector(".settings--volume--checkbox") // Линия по которой ходит ползунок громкости
 const volumePose = document.querySelector(".settings--volume--checkbox--pose") // Ползунок громкости
 const musicTrackList = ["./sound/soundTrack/bensound-memories.mp3", "./sound/soundTrack/bensound-ukulele.mp3","./sound/soundTrack/bensound-cute.mp3"] // трек-лист
+
 buttonStartGame.textContent = "Играть"
 
+soundFinishBottle.load()
+soundFinishLvl.load()
+soundBallHit.load()
 
 // Функция открыть настройки
 function openSettings () {
@@ -353,7 +357,7 @@ function runBall([firstBottle, lastBottle]) {
 				}
 			})) {
 				opacity.style.zIndex = 50
-				opacity.style.background = `url(../img/confetti-12.gif) center center no-repeat`
+				opacity.style.background = `url(../img/confettiFinishLvl.gif) center center no-repeat`
 				opacity.style.backgroundSize = `cover`
 				sounds(soundFinishLvl)
 				let animationNextLvl = levelBoard.animate([
