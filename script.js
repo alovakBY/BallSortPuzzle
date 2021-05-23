@@ -20,9 +20,6 @@ const musicTrackList = ["./sound/soundTrack/bensound-memories.mp3", "./sound/sou
 
 buttonStartGame.textContent = "Играть"
 
-/* soundFinishBottle.load()
-soundFinishLvl.load()
-soundBallHit.load() */
 
 // Функция открыть окно
 function openWindow (settings) {
@@ -134,7 +131,10 @@ const returnBtn = document.querySelector(".startGame-navigation-back") // Кно
 const windowGame = document.querySelector(".startGame") // Окно игры
 const windowMainMenu = document.querySelector(".main") // Окно главного меню
 const windowGameToMenu = document.querySelector(".startGame-navigation-mainMenu") // Кнопка "Главное меню"
+const windowGameToMenuBurger = document.querySelector(".startGame-navigation-mainMenu-burger") // Кнопка-бургер "Главное меню"
 const windowGameSettings = document.querySelector(".startGame-navigation-settings") // Кнопка "Настройки"
+const windowGameSettingsBurger = document.querySelector(".startGame-navigation-settings-burger") // Кнопка-бургер "Настройки"
+
 const levelBoard = document.querySelector(".startGame-game-lvl") // Котейнер текущего уровня
 const bottles = document.querySelector(".startGame-game-bottles") // Контейнер, где находятся наши пробирки
 const confetti = document.querySelector(".confetti")// Конфетти
@@ -209,6 +209,8 @@ function startGame(lvl,amountColors,nextLvl) {
 			console.log(localStorage["BallSortPuzzle"] )
 		}
 	}
+
+
 // Функция отрисовки пробирок и шариков
 	maxLengthReturnArr = 5
 	coupleOfBootles = [] // Массив для сравнения наших
@@ -281,7 +283,7 @@ function startGame(lvl,amountColors,nextLvl) {
 	}
 }
 
-// Функция анимации движения мяча
+// Функция анимации движения шарика
 function runBall([firstBottle, lastBottle]) {
 	const ball = firstBottle.lastChild.cloneNode(true)
 	opacity.style.zIndex = 50
@@ -411,7 +413,14 @@ windowGameToMenu.addEventListener("click", () => {
 	windowMainMenu.style.left = `0%`
 })
 
+windowGameToMenuBurger.addEventListener("click", () => {
+	windowGame.style.left = `100%`
+	windowMainMenu.style.left = `0%`
+})
+
 windowGameSettings.addEventListener("click", () => {openWindow(settings)})
+
+windowGameSettingsBurger.addEventListener("click", () => {openWindow(settings)})
 
 // Кнопка "шаг назад"
 returnBtn.addEventListener("click", () => {

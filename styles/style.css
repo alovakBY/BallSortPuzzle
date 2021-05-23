@@ -277,14 +277,16 @@ label > input {
 .startGame-navigation {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: stretch;
 }
 
-.startGame-navigation-mainMenu-burger {
+.startGame-navigation-mainMenu-burger,
+.startGame-navigation-settings-burger {
   display: none;
 }
 
 .fas {
+  vertical-align: sub;
   width: 60px;
   font-size: 30px;
 }
@@ -365,6 +367,37 @@ span {
     font-size: 36px;
   }
 
+  .levels {
+    padding: 10px;
+    top: -200%;
+    left: 50%;
+    width: 400px;
+    height: 300px;
+    border-radius: 25px;
+  }
+
+  .levels--levels {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .levels--levels-level {
+    margin: 5px;
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgb(238, 235, 81);
+    border-radius: 10px;
+    background-color: rgb(104, 192, 111);
+    color: rgb(238, 235, 81);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.3s;
+  }
+
   .settings {
     padding-top: 10px;
     position: absolute;
@@ -401,12 +434,22 @@ span {
   }
 
   .fas {
-    width: 30px;
-    font-size: 16px;
+    width: 40px;
+    font-size: 24px;
   }
 
   .startGame {
     padding: 15px 10px 0px;
+  }
+
+  .startGame-navigation-mainMenu-burger,
+  .startGame-navigation-settings-burger {
+    display: block;
+  }
+
+  .startGame-navigation-mainMenu,
+  .startGame-navigation-settings {
+    display: none;
   }
 
   .startGame-game-lvl {
