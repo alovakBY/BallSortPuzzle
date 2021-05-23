@@ -20,15 +20,22 @@ const musicTrackList = ["./sound/soundTrack/bensound-memories.mp3", "./sound/sou
 
 buttonStartGame.textContent = "Играть"
 
-soundFinishBottle.load()
+/* soundFinishBottle.load()
 soundFinishLvl.load()
-soundBallHit.load()
+soundBallHit.load() */
 
-// Функция открыть настройки
-function openSettings () {
+// Функция открыть окно
+function openWindow (settings) {
 	settings.style.top = `20%`
 	opacity08.style.zIndex = `2`
 	settings.style.zIndex = `5`
+}
+
+// Функция закрыть окно
+function closeWindow (settings) {
+	settings.style.top = `-200%`
+	settings.style.zIndex = ``
+	opacity08.style.zIndex = ``
 }
 
 // Функция, которая запускает музыку и меняет src по окончанию трека. 
@@ -55,14 +62,11 @@ function sounds(sound) {
 	}
 }
 
+// Открыть настройки
+buttonSettings.addEventListener("click", () => {openWindow(settings)})
 
-buttonSettings.addEventListener("click", openSettings)
-
-settingsBack.addEventListener("click", () => {
-	settings.style.top = `-200%`
-	settings.style.zIndex = ``
-	opacity08.style.zIndex = ``
-}) 
+// Закрыть настройки
+settingsBack.addEventListener("click", () => {closeWindow (settings)}) 
 
 // Вкл./Выкл. музыки
 musicSetting.addEventListener("click", (e) => {
@@ -135,60 +139,80 @@ const levelBoard = document.querySelector(".startGame-game-lvl") // Котейн
 const bottles = document.querySelector(".startGame-game-bottles") // Контейнер, где находятся наши пробирки
 const confetti = document.querySelector(".confetti")// Конфетти
 let ballInTheAir = false
-let lvlBoard = 1
 let lvl = 1 // Стартовый уровень
-let nextLvl = 0
+let amountColors = 2 // Количество цветов при старте
+let nextLvl = 1 
 let coupleOfBootles // Массив, в который мы будем пушить две пробирки для сравнения
 let returnArr = []
-let maxLengthReturnArr 
+let maxLengthReturnArr // Массив, в который будут записываться пробирки для кнопки "шаг назад"
 
-
-
-
-// Кнопка "Играть"
-buttonStartGame.addEventListener("click", (e) => {
-	if (e.target.textContent === "Играть") {
-		startGame(lvl,nextLvl)
-	}
-	e.target.textContent = "Продолжить"
-	windowGame.style.left = `0%`
-	windowMainMenu.style.left = `-100%`
-}) 
-
-
-// Кнопка рестарта раунда
-restartBtn.addEventListener("click", () => startGame(lvl,nextLvl)) 
-
-windowGameToMenu.addEventListener("click", () => {
-	windowGame.style.left = `100%`
-	windowMainMenu.style.left = `0%`
-})
-
-windowGameSettings.addEventListener("click", openSettings)
-
-// Кнопка "шаг назад"
-returnBtn.addEventListener("click", () => {
-	if (returnArr.length === 0) return
-	if (ballInTheAir) return
-	maxLengthReturnArr--
-	returnBtn.querySelector("span").textContent = maxLengthReturnArr
-	let [firstBottle, lastBottle] = returnArr.pop()
-	firstBottle.lastChild.style.bottom = `${firstBottle.getBoundingClientRect().bottom - firstBottle.getBoundingClientRect().top}px`
-	firstBottle.lastChild.addEventListener('transitionend', (e) => {
-		if (e.propertyName === "bottom") {
-			runBall([firstBottle, lastBottle])
+// Если есть локальное хранилище - создаем кнопку "Уровни", при нажатии на которую можно выбрать на каком уровне из пройденных хотим сейчас играть
+if (('localStorage' in window) && (window.localStorage!==null)) {
+	let arrLevels
+	const levelsBtn = document.createElement("div")
+	const levelsBackBtn = settingsBack.cloneNode(true)
+	settings.insertAdjacentHTML('afterend', '<div class="levels"></div>')
+	const levels = document.querySelector(".levels")
+	const levelsLevels = document.createElement("div")
+	levelsLevels.className = "levels--levels"
+	levels.appendChild(levelsLevels)
+	levelsBtn.textContent = "Уровни"
+	levelsBtn.className = "main--menu levelsBtn"
+	windowMainMenu.appendChild(levelsBtn)
+	levelsBtn.addEventListener("click", () => {
+		if (localStorage["BallSortPuzzle"]) {
+			while (levelsLevels.firstChild) {
+				levelsLevels.removeChild(levelsLevels.firstChild);
+			}
+			arrLevels = JSON.parse(localStorage["BallSortPuzzle"])
+			for (let i = 0; i < arrLevels.length; i++) {
+				const lvlDiv = document.createElement("div")
+				lvlDiv.textContent = i + 1
+				lvlDiv.className = "levels--levels-level"
+				levelsLevels.appendChild(lvlDiv)
+			}
 		}
+		openWindow(levels)
 	})
-})
+	levelsBackBtn.addEventListener("click", () => closeWindow(levels))
+	
+	levels.appendChild(levelsBackBtn)
+	levelsLevels.addEventListener("click", (e) => {
+		if (e.target.className === "levels--levels") return
+		closeWindow(levels)
+		lvl = arrLevels[parseInt(e.target.textContent)-1].lvl
+		amountColors = arrLevels[parseInt(e.target.textContent)-1].amountColors
+		nextLvl = arrLevels[parseInt(e.target.textContent)-1].nextLvl
+		buttonStartGame.textContent = "Продолжить"
+		windowGame.style.left = `0%`
+		windowMainMenu.style.left = `-100%`
+		startGame(lvl,amountColors,nextLvl)
+	})
+}
+
 
 // Старт игры
-
-function startGame(lvl,nextLvl) {
+function startGame(lvl,amountColors,nextLvl) {
+	if (('localStorage' in window) && (window.localStorage!==null)) {
+		if(localStorage["BallSortPuzzle"]) {
+			const level = {lvl: lvl,amountColors: amountColors, nextLvl: nextLvl}
+			const arr = JSON.parse(localStorage["BallSortPuzzle"])
+			if (arr.every((e) => {
+				return e.lvl !== level.lvl
+			})) arr.push(level)
+			localStorage["BallSortPuzzle"] = JSON.stringify(arr)
+		} else {
+			const level = {lvl: lvl,amountColors: amountColors, nextLvl: nextLvl}
+			const arr = []
+			arr.push(level)
+			localStorage["BallSortPuzzle"] = JSON.stringify(arr)
+			console.log(localStorage["BallSortPuzzle"] )
+		}
+	}
 // Функция отрисовки пробирок и шариков
 	maxLengthReturnArr = 5
 	coupleOfBootles = [] // Массив для сравнения наших
 	returnArr = [] // Массив элесентов для "шага назад"
-	const amountColors = lvl + 1 // Количество цветов
 	let amountBottle // Количество пробирок
 	const randomColor = []
 	returnBtn.querySelector("span").textContent = maxLengthReturnArr
@@ -210,10 +234,10 @@ function startGame(lvl,nextLvl) {
 		bottles.removeChild(bottles.firstChild);
 	}
 
-	levelBoard.textContent = `Уровень ${lvlBoard}`
+	levelBoard.textContent = `Уровень ${lvl}`
 
 	// Рисуем пробирки в зависимости от количества цветов
-	if (lvl === 1) {
+	if (amountColors === 1) {
 		amountBottle = amountColors + 1
 	} else {
 		amountBottle = amountColors + 2
@@ -252,11 +276,157 @@ function startGame(lvl,nextLvl) {
 			while (bottles.firstChild) {
 				bottles.removeChild(bottles.firstChild);
 			}
-			startGame(lvl,nextLvl)
+			startGame(lvl,amountColors,nextLvl)
 		}
 	}
 }
 
+// Функция анимации движения мяча
+function runBall([firstBottle, lastBottle]) {
+	const ball = firstBottle.lastChild.cloneNode(true)
+	opacity.style.zIndex = 50
+	// Анимация движения шарика
+	let animationRunBall = firstBottle.lastChild.animate([
+		{ 
+		left: `${lastBottle.getBoundingClientRect().left - firstBottle.getBoundingClientRect().left + (lastBottle.clientWidth - firstBottle.lastChild.offsetWidth)/2}px`,
+		bottom: `${firstBottle.getBoundingClientRect().bottom - lastBottle.getBoundingClientRect().top}px`,
+		}
+	], 
+	{
+		duration: 100,
+		iterations: 1
+	})
+	firstBottle.lastChild.style.zIndex = `1`
+	animationRunBall.addEventListener("finish", () => {
+		opacity.style.zIndex = -2
+		lastBottle.appendChild(ball)
+		lastBottle.lastChild.style.bottom = `${(lastBottle.children.length - 1)*lastBottle.lastChild.offsetHeight}px`
+		firstBottle.removeChild(firstBottle.lastChild)
+		lastBottle.lastChild.addEventListener("transitionend", function checkPosition() {
+			ballKick(lastBottle.lastChild)
+			sounds(soundBallHit)
+			if (lastBottle.children.length === 0) return
+			// Проверка, если все шарики в колбах одного цвета или в колбе нету шариков, то переходим на следующий уровень
+			if ([...bottles.children].every((bottle) => {
+				if (bottle.children.length === 0) {
+					return true
+				} 
+				if (bottle.children.length === 4) {
+					const className = bottle.children[0].className
+					return  ([...bottle.children].every(ball => ball.className === className)) 
+				}
+			})) {
+				opacity.style.zIndex = 50
+				opacity.style.background = `url(../img/confettiFinishLvl.gif) center center no-repeat`
+				opacity.style.backgroundSize = `cover`
+				sounds(soundFinishLvl)
+				let animationNextLvl = levelBoard.animate([
+					{ transform: `scale(1.5)`,
+				}
+				], {
+					duration: 2500,
+					iterations: 1
+				})
+				animationNextLvl.addEventListener("finish", () =>{
+					opacity.style.zIndex = -2
+					opacity.style.background = ``
+					if (nextLvl === amountColors) {
+						amountColors ++
+						lvl++
+						nextLvl = 1
+						startGame(lvl,amountColors,nextLvl)
+					} else {
+						lvl ++
+						nextLvl++
+						startGame(lvl,amountColors,nextLvl)
+					}
+				})
+				return
+			}
+			// Если в пробирке собраны все цвета, то на пробирке выстрелит конфетти
+			const className = lastBottle.children[0].className
+			if ([...lastBottle.children].every(ball => ball.className === className) && lastBottle.children.length === 4 && !lastBottle.classList.contains("confettiPass")) {
+				lastBottle.classList.add("confetti")
+				lastBottle.classList.add("confettiPas")
+				sounds(soundFinishBottle)
+				setTimeout(() => lastBottle.classList.remove("confetti"),1000)
+			}
+			lastBottle.lastChild.removeEventListener("transitionend", checkPosition) 
+		})
+	})
+} 
+
+// Функция анимации отскока шарика
+function ballKick(ball) {
+	ball.animate([
+		{
+		transform: `scale(1, 1) translateY(0px)`, 
+		},
+		{
+		transform: `scale(1, 0.8) translateY(-20px)`
+		},
+		{
+		transform: `scale(1, 1) translateY(0px)`, 
+		},
+		{
+		transform: `scale(1, 0.9) translateY(-10px)`
+		},
+		{
+		transform: `scale(1, 1) translateY(0px)`, 
+		}
+	],
+	{
+		duration: 200,
+		iterations: 1
+	})
+}
+
+
+// Кнопка "Играть"
+buttonStartGame.addEventListener("click", (e) => {
+	if (e.target.textContent === "Играть") {
+		if (('localStorage' in window) && (window.localStorage!==null)) {
+			if (localStorage["BallSortPuzzle"]) {
+				const arr = JSON.parse(localStorage.getItem("BallSortPuzzle"))
+				lvl = arr[arr.length - 1].lvl
+				amountColors = arr[arr.length - 1].amountColors
+				nextLvl = arr[arr.length - 1].nextLvl
+				startGame(lvl,amountColors,nextLvl)
+			} else {
+				startGame(lvl,amountColors,nextLvl)
+			}
+		}
+	}
+	e.target.textContent = "Продолжить"
+	windowGame.style.left = `0%`
+	windowMainMenu.style.left = `-100%`
+}) 
+
+
+// Кнопка рестарта раунда
+restartBtn.addEventListener("click", () => startGame(lvl,amountColors,nextLvl)) 
+
+windowGameToMenu.addEventListener("click", () => {
+	windowGame.style.left = `100%`
+	windowMainMenu.style.left = `0%`
+})
+
+windowGameSettings.addEventListener("click", () => {openWindow(settings)})
+
+// Кнопка "шаг назад"
+returnBtn.addEventListener("click", () => {
+	if (returnArr.length === 0) return
+	if (ballInTheAir) return
+	maxLengthReturnArr--
+	returnBtn.querySelector("span").textContent = maxLengthReturnArr
+	let [firstBottle, lastBottle] = returnArr.pop()
+	firstBottle.lastChild.style.bottom = `${firstBottle.getBoundingClientRect().bottom - firstBottle.getBoundingClientRect().top}px`
+	firstBottle.lastChild.addEventListener('transitionend', (e) => {
+		if (e.propertyName === "bottom") {
+			runBall([firstBottle, lastBottle])
+		}
+	})
+})
 
 
 bottles.addEventListener("click", (e) => {	
@@ -322,104 +492,7 @@ bottles.addEventListener("click", (e) => {
 })
 
 
-function runBall([firstBottle, lastBottle]) {
-	const ball = firstBottle.lastChild.cloneNode(true)
-	opacity.style.zIndex = 50
-	// Анимация движения шарика
-	let animationRunBall = firstBottle.lastChild.animate([
-		{ 
-		left: `${lastBottle.getBoundingClientRect().left - firstBottle.getBoundingClientRect().left + (lastBottle.clientWidth - firstBottle.lastChild.offsetWidth)/2}px`,
-		bottom: `${firstBottle.getBoundingClientRect().bottom - lastBottle.getBoundingClientRect().top}px`,
-		}
-	], 
-	{
-		duration: 100,
-		iterations: 1
-	})
-	firstBottle.lastChild.style.zIndex = `1`
-	animationRunBall.addEventListener("finish", () => {
-		opacity.style.zIndex = -2
-		lastBottle.appendChild(ball)
-		lastBottle.lastChild.style.bottom = `${(lastBottle.children.length - 1)*lastBottle.lastChild.offsetHeight}px`
-		firstBottle.removeChild(firstBottle.lastChild)
-		lastBottle.lastChild.addEventListener("transitionend", function checkPosition() {
-			ballKick(lastBottle.lastChild)
-			sounds(soundBallHit)
-			if (lastBottle.children.length === 0) return
-			// Проверка, если все шарики в колбах одного цвета или в колбе нету шариков, то переходим на следующий уровень
-			if ([...bottles.children].every((bottle) => {
-				if (bottle.children.length === 0) {
-					return true
-				} 
-				if (bottle.children.length === 4) {
-					const className = bottle.children[0].className
-					return  ([...bottle.children].every(ball => ball.className === className)) 
-				}
-			})) {
-				opacity.style.zIndex = 50
-				opacity.style.background = `url(../img/confettiFinishLvl.gif) center center no-repeat`
-				opacity.style.backgroundSize = `cover`
-				sounds(soundFinishLvl)
-				let animationNextLvl = levelBoard.animate([
-					{ transform: `scale(1.5)`,
-				}
-				], {
-					duration: 2500,
-					iterations: 1
-				})
-				animationNextLvl.addEventListener("finish", () =>{
-					opacity.style.zIndex = -2
-					opacity.style.background = ``
-					if (nextLvl === lvl) {
-						lvlBoard ++
-						lvl++
-						nextLvl = 0
-						startGame(lvl,nextLvl)
-					} else {
-						lvlBoard ++
-						nextLvl++
-						startGame(lvl,nextLvl)
-					}
-				})
-				return
-			}
-			// Если в пробирке собраны все цвета, то на пробирке выстрелит конфетти
-			const className = lastBottle.children[0].className
-			if ([...lastBottle.children].every(ball => ball.className === className) && lastBottle.children.length === 4 && !lastBottle.classList.contains("confettiPass")) {
-				lastBottle.classList.add("confetti")
-				lastBottle.classList.add("confettiPas")
-				sounds(soundFinishBottle)
-				setTimeout(() => lastBottle.classList.remove("confetti"),1000)
-			}
-			lastBottle.lastChild.removeEventListener("transitionend", checkPosition) 
-		})
-	})
-} 
 
-// Функция анимации отскока шарика
-function ballKick(ball) {
-	ball.animate([
-		{
-		transform: `scale(1, 1) translateY(0px)`, 
-		},
-		{
-		transform: `scale(1, 0.8) translateY(-20px)`
-		},
-		{
-		transform: `scale(1, 1) translateY(0px)`, 
-		},
-		{
-		transform: `scale(1, 0.9) translateY(-10px)`
-		},
-		{
-		transform: `scale(1, 1) translateY(0px)`, 
-		}
-	],
-	{
-		duration: 200,
-		iterations: 1
-	})
-}
 
 
 
