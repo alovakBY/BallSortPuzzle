@@ -319,7 +319,7 @@ function runBall([firstBottle, lastBottle]) {
 				}
 			})) {
 				opacity.style.zIndex = 50
-				opacity.style.background = `url(../img/finishLvl.gif) center center repeat`
+				opacity.style.background = `url(./img/confettiFinishLvl.gif) center center repeat`
 				opacity.style.backgroundSize = `cover`
 				sounds(soundFinishLvl)
 				let animationNextLvl = levelBoard.animate([
