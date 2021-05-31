@@ -1,8 +1,11 @@
 "use strict"
 const buttonStartGame = document.querySelector(".startBtn") // Старт игры
 const buttonSettings = document.querySelector(".settingsBtn") // Кнопка вызова меню настроек
+const buttonRecords = document.querySelector(".recordsBtn") // Кнопка рекордов
 const settings = document.querySelector(".settings") // Контейнер настроек
 const settingsBack = document.querySelector(".settings--backBtn") // Кнопка "назад" в меню настроек
+const records = document.querySelector(".records") // Контейнер рекордов
+let recordsBack 
 const opacity08 = document.querySelector(".opacity08") // Контейнер class = "opacity0.8"
 const opacity = document.querySelector(".opacity") // Контейнер class = "opacity0.8"
 const container = document.querySelector(".container") //Контейнер class = "container"
@@ -17,21 +20,34 @@ const volumeInput = document.querySelector("input[type = 'range']") // input г�
 const volumeLine = document.querySelector(".settings--volume--checkbox") // Линия по которой ходит ползунок громкости
 const volumePose = document.querySelector(".settings--volume--checkbox--pose") // Ползунок громкости
 const musicTrackList = ["./sound/soundTrack/bensound-memories.mp3", "./sound/soundTrack/bensound-ukulele.mp3","./sound/soundTrack/bensound-cute.mp3"] // трек-лист
+const pass = "alovak"
+let arrRecords = []
 
 buttonStartGame.textContent = "Играть"
 
+// Функция работы с сервером
+function getPromise(f, n, p, v) {
+	const sp = new URLSearchParams()
+
+	if (f) sp.append('f', f)
+	if (n) sp.append('n', n)
+	if (p) sp.append('p', p)
+	if (v) sp.append('v', v)
+
+	return fetch("https://fe.it-academy.by/AjaxStringStorage2.php", { method: "POST", body: sp })
+}
 
 // Функция открыть окно
-function openWindow (settings) {
-	settings.style.top = `20%`
+function openWindow (window) {
+	window.style.top = `20%`
 	opacity08.style.zIndex = `2`
-	settings.style.zIndex = `5`
+	window.style.zIndex = `5`
 }
 
 // Функция закрыть окно
-function closeWindow (settings) {
-	settings.style.top = `-200%`
-	settings.style.zIndex = ``
+function closeWindow (window) {
+	window.style.top = `-200%`
+	window.style.zIndex = ``
 	opacity08.style.zIndex = ``
 }
 
@@ -59,11 +75,36 @@ function sounds(sound) {
 	}
 }
 
+
+getPromise("READ", "LOSEV_ARTEM")
+	.then(value => value.json())
+	.then(data => {
+		arrRecords = JSON.parse(data.result)
+		arrRecords.sort((a, b) => parseInt(b) - parseInt(a) )
+		arrRecords.forEach((e,i) => {
+			const div = document.createElement("div")
+			div.textContent = `${i+1} место: ${e} уровень`
+			records.appendChild(div)
+		})
+		const recordsBack = settingsBack.cloneNode(true)
+		records.appendChild(recordsBack)
+		
+		// Закрыть рекорды
+		recordsBack.addEventListener("click", () => {closeWindow (records)}) 
+})
+
+
+
 // Открыть настройки
 buttonSettings.addEventListener("click", () => {openWindow(settings)})
 
 // Закрыть настройки
 settingsBack.addEventListener("click", () => {closeWindow (settings)}) 
+
+// Открыть рекорды
+buttonRecords.addEventListener("click", () => {openWindow(records)})
+
+
 
 // Вкл./Выкл. музыки
 musicSetting.addEventListener("click", (e) => {
@@ -146,11 +187,13 @@ let coupleOfBootles // Массив, в который мы будем пуши�
 let returnArr = []
 let maxLengthReturnArr // Массив, в который будут записываться пробирки для кнопки "шаг назад"
 
+
+
 // Если есть локальное хранилище - создаем кнопку "Уровни", при нажатии на которую можно выбрать на каком уровне из пройденных хотим сейчас играть
 if (('localStorage' in window) && (window.localStorage!==null)) {
 	let arrLevels
 	const levelsBtn = document.createElement("div")
-	const levelsBackBtn = settingsBack.cloneNode(true)
+	const levelsBack = settingsBack.cloneNode(true)
 	settings.insertAdjacentHTML('afterend', '<div class="levels"></div>')
 	const levels = document.querySelector(".levels")
 	const levelsLevels = document.createElement("div")
@@ -174,9 +217,11 @@ if (('localStorage' in window) && (window.localStorage!==null)) {
 		}
 		openWindow(levels)
 	})
-	levelsBackBtn.addEventListener("click", () => closeWindow(levels))
+
+	levelsBack.addEventListener("click", () => closeWindow(levels))
 	
-	levels.appendChild(levelsBackBtn)
+	levels.appendChild(levelsBack)
+
 	levelsLevels.addEventListener("click", (e) => {
 		if (e.target.className === "levels--levels") return
 		closeWindow(levels)
@@ -193,6 +238,21 @@ if (('localStorage' in window) && (window.localStorage!==null)) {
 
 // Старт игры
 function startGame(lvl,amountColors,nextLvl) {
+	if (arrRecords.every(e => e !== lvl)) {
+		if (arrRecords.length === 10) {
+			arrRecords.sort((a, b) => parseInt(b) - parseInt(a) )
+			arrRecords.pop()
+			arrRecords.push(lvl)
+		} else {
+			arrRecords.push(lvl)
+		}
+	}
+	getPromise("READ", "LOSEV_ARTEM")
+		.then(value => value.json())
+		.then(getPromise("LOCKGET", "LOSEV_ARTEM", pass))
+		.then(() => getPromise("UPDATE", "LOSEV_ARTEM", pass, JSON.stringify(arrRecords)))
+
+
 	if (('localStorage' in window) && (window.localStorage!==null)) {
 		if(localStorage["BallSortPuzzle"]) {
 			const level = {lvl: lvl,amountColors: amountColors, nextLvl: nextLvl}

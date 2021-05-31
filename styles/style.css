@@ -50,7 +50,7 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-  padding-top: 50px;
+  padding: 30px;
   transition: left 0.5s;
 }
 
@@ -58,7 +58,7 @@ body {
   font-size: 100px;
   color: rgb(238, 183, 81);
   text-shadow: 0px 0px 10px rgb(104, 192, 111);
-  margin-bottom: 50px;
+  margin-bottom: 30px;
 }
 
 .main--menu {
@@ -264,6 +264,28 @@ label > input {
   clip: rect(1px, 1px, 1px, 1px);
 }
 
+.records {
+  padding: 30px;
+  position: absolute;
+  top: -200%;
+  left: 50%;
+  transform: translate(-50%, 0);
+  width: 600px;
+  height: 500px;
+  border-radius: 25px;
+  border: 5px solid rgb(238, 235, 81);
+  background-color: rgb(115, 182, 160);
+  transition: top 0.5s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.records > div {
+  color: rgb(238, 235, 81);
+}
+
 .startGame {
   width: 100%;
   height: 100%;
@@ -353,18 +375,18 @@ span {
   color: rgb(102, 102, 102);
 }
 
-@media all and (max-width: 1024px) {
+@media all and (max-width: 1440px) {
   .main--title {
     font-size: 80px;
-    margin-bottom: 80px;
+    margin-bottom: 30px;
   }
 
   .main--menu {
-    margin: 0 auto 30px;
-    width: 300px;
+    margin: 0 auto 20px;
+    width: 250px;
     height: 80px;
-    border-radius: 30px;
-    font-size: 36px;
+    border-radius: 20px;
+    font-size: 32px;
   }
 
   .levels {
@@ -396,6 +418,14 @@ span {
     justify-content: center;
     align-items: center;
     transition: 0.3s;
+  }
+
+  .records {
+    padding: 10px;
+    position: absolute;
+    width: 400px;
+    height: 300px;
+    border-radius: 20px;
   }
 
   .settings {
@@ -465,20 +495,10 @@ span {
     margin: 50px 5px 0;
     width: 50px;
     height: 180px;
-    border-radius: 0px 0px 50px 50px;
   }
 
   .bottle::after {
-    content: "";
     width: 5px;
-    height: 75%;
-    background: linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.411),
-      transparent
-    );
-    border-radius: 5px;
-    position: absolute;
     bottom: 30px;
     left: 5px;
   }
@@ -486,17 +506,85 @@ span {
   .ball {
     height: 40px;
     width: 40px;
-    border-radius: 50%;
-    position: absolute;
-    z-index: -1;
-    transition: 0.1s;
-    border: 2px solid white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: rgb(102, 102, 102);
   }
 }
 
-@media all and (max-width: 1024px) {
+@media all and (max-width: 768px) {
+  .main {
+    padding: 10px;
+  }
+
+  .main--title {
+    font-size: 60px;
+    margin-bottom: 30px;
+  }
+
+  .main--menu {
+    margin: 0 auto 15px;
+    width: 250px;
+    height: 60px;
+    border-radius: 10;
+    font-size: 24;
+  }
+
+  .levels {
+    padding: 10px;
+    position: absolute;
+    width: 90%;
+    height: 300px;
+    border-radius: 20px;
+  }
+
+  .records {
+    padding: 10px;
+    position: absolute;
+    width: 90%;
+    height: 300px;
+    border-radius: 20px;
+  }
+
+  .settings {
+    width: 80%;
+  }
+
+  .settings--volume--checkbox {
+    width: 150px;
+  }
+
+  .settings--volume--checkbox--pose {
+    left: 0%;
+    top: -11px;
+    width: 25px;
+    height: 25px;
+  }
+
+  .bottle {
+    margin: 40px 5px 0;
+    width: 40px;
+    height: 140px;
+  }
+
+  .bottle::after {
+    width: 5px;
+    bottom: 30px;
+    left: 5px;
+  }
+
+  .ball {
+    height: 30px;
+    width: 30px;
+  }
+}
+
+@media all and (max-width: 450px) {
+  .settings {
+    width: 95%;
+  }
+
+  .settings--music,
+  .settings--sound,
+  .settings--volume {
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
 }
