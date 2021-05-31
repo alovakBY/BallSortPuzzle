@@ -131,18 +131,19 @@ soundBallHit.volume = volumeInput.value/100
 
 function start(e) {
 	volumePose.style.backgroundColor = `rgb(238, 183, 81)`
-	if (e.touches) {
-		shiftXTouch = e.touches[0].pageX -  e.target.getBoundingClientRect().x
-		document.addEventListener("touchmove", moveTouch)
-		document.addEventListener("touchend", endTouch)
-	} else {
-		shiftX = e.pageX - e.target.getBoundingClientRect().x
-		document.addEventListener("mousemove", move)
-		document.addEventListener("mouseup", end)
-	}
+	shiftX = e.pageX - e.target.getBoundingClientRect().x
+	document.addEventListener("mousemove", move)
+	document.addEventListener("mouseup", end)
 	e.target.ondragstart = function() {
 		return false
 	}
+}
+
+function startTouch(e) {
+	volumePose.style.backgroundColor = `rgb(238, 183, 81)`
+	shiftXTouch = e.touches[0].pageX -  e.target.getBoundingClientRect().x
+	document.addEventListener("touchmove", moveTouch)
+	document.addEventListener("touchend", endTouch)
 }
 
 function move(e) {
@@ -179,8 +180,12 @@ function endTouch() {
 	document.removeEventListener("touchmove", moveTouch)
 }
 
+
+volumePose.addEventListener("touchstart", startTouch)
 volumePose.addEventListener("mousedown", start)
-volumePose.addEventListener("touchstart", start)
+
+
+
 
 
 
