@@ -146,10 +146,10 @@ function start(e) {
 
 function move(e) {
 	volumeInput.value = parseInt(volumePose.style.left) / positionVolumePose*100
-	music.volume = volumeInput.value/100
-	soundFinishBottle.volume = volumeInput.value/100
-	soundFinishLvl.volume = volumeInput.value/100
-	soundBallHit.volume = volumeInput.value/100
+	music.volume = parseInt(volumeInput.value)/100
+	soundFinishBottle.volume = parseInt(volumeInput.value)/100
+	soundFinishLvl.volume = parseInt(volumeInput.value)/100
+	soundBallHit.volume = parseInt(volumeInput.value)/100
 	volumePose.style.left = `${e.pageX - volumeLine.getBoundingClientRect().x - shiftX}px`
 	if (volumePose.getBoundingClientRect().left - volumeLine.getBoundingClientRect().left <= 0) volumePose.style.left = `0px`
 	if (volumePose.getBoundingClientRect().right - volumeLine.getBoundingClientRect().right >= 0) volumePose.style.left = `${positionVolumePose}px`
@@ -157,10 +157,10 @@ function move(e) {
 
 function moveTouch (e) {
 	volumeInput.value = parseInt(volumePose.style.left) / positionVolumePose*100
-	music.volume = volumeInput.value/100
-	soundFinishBottle.volume = volumeInput.value/100
-	soundFinishLvl.volume = volumeInput.value/100
-	soundBallHit.volume = volumeInput.value/100
+	music.volume = parseInt(volumeInput.value)/100
+	soundFinishBottle.volume = parseInt(volumeInput.value)/100
+	soundFinishLvl.volume = parseInt(volumeInput.value)/100
+	soundBallHit.volume = parseInt(volumeInput.value)/100
 	volumePose.style.left = `${e.targetTouches[0].pageX - volumeLine.getBoundingClientRect().x - shiftXTouch}px`
 	if (volumePose.getBoundingClientRect().left - volumeLine.getBoundingClientRect().left <= 0) volumePose.style.left = `0px`
 	if (volumePose.getBoundingClientRect().right - volumeLine.getBoundingClientRect().right >= 0) volumePose.style.left = `${positionVolumePose}px`

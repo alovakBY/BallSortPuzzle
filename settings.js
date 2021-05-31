@@ -1,4 +1,4 @@
-"use strict"
+/* "use strict"
 
 const buttonSettings = document.querySelector(".settingsBtn") // Кнопка вызова меню настроек
 const settings = document.querySelector(".settings") // Контейнер настроек
@@ -87,3 +87,4 @@ function end() {
 volumePose.addEventListener("mousedown", start)
 
 
+ */
