@@ -139,13 +139,6 @@ function start(e) {
 	}
 }
 
-function startTouch(e) {
-	volumePose.style.backgroundColor = `rgb(238, 183, 81)`
-	shiftXTouch = e.touches[0].pageX -  e.target.getBoundingClientRect().x
-	document.addEventListener("touchmove", moveTouch)
-	document.addEventListener("touchend", endTouch)
-}
-
 function move(e) {
 	volumeInput.value = parseInt(volumePose.style.left) / positionVolumePose*100
 	music.volume = parseInt(volumeInput.value)/100
@@ -164,9 +157,20 @@ function end() {
 	volumePose.addEventListener("mousedown", start)
 }
 
+function startTouch(e) {
+	volumePose.style.backgroundColor = `rgb(238, 183, 81)`
+	shiftXTouch = e.touches[0].pageX -  e.target.getBoundingClientRect().x
+	document.addEventListener("touchmove", moveTouch)
+	document.addEventListener("touchend", endTouch)
+}
+
+const spmus = document.querySelector(".settings--music > span") 
+console.log(spmus)
 function moveTouch (e) {
 	volumeInput.value = parseInt(volumePose.style.left) / positionVolumePose*100
+	console.log(volumeInput.value)
 	music.volume = parseInt(volumeInput.value)/100
+	spmus.textContent = `Музыка ${music.volume}`
 	soundFinishBottle.volume = parseInt(volumeInput.value)/100
 	soundFinishLvl.volume = parseInt(volumeInput.value)/100
 	soundBallHit.volume = parseInt(volumeInput.value)/100 
