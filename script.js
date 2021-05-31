@@ -131,8 +131,8 @@ soundBallHit.volume = volumeInput.value/100
 
 function start(e) {
 	volumePose.style.backgroundColor = `rgb(238, 183, 81)`
-	if (e.targetTouches) {
-		shiftXTouch = e.targetTouches[0].pageX -  e.target.getBoundingClientRect().x
+	if (e.touches) {
+		shiftXTouch = e.touches[0].pageX -  e.target.getBoundingClientRect().x
 		document.addEventListener("touchmove", moveTouch)
 		document.addEventListener("touchend", endTouch)
 	} else {
@@ -164,22 +164,18 @@ function end() {
 }
 
 function moveTouch (e) {
-	 volumeInput.value = parseInt(volumePose.style.left) / positionVolumePose*100
-	/* music.volume = parseInt(volumeInput.value)/100
+	volumeInput.value = parseInt(volumePose.style.left) / positionVolumePose*100
+	music.volume = parseInt(volumeInput.value)/100
 	soundFinishBottle.volume = parseInt(volumeInput.value)/100
 	soundFinishLvl.volume = parseInt(volumeInput.value)/100
-	soundBallHit.volume = parseInt(volumeInput.value)/100  */
-	volumePose.style.left = `${e.targetTouches[0].pageX - volumeLine.getBoundingClientRect().x - shiftXTouch}px`
+	soundBallHit.volume = parseInt(volumeInput.value)/100 
+	volumePose.style.left = `${e.touches[0].pageX - volumeLine.getBoundingClientRect().x - shiftXTouch}px`
 	if (volumePose.getBoundingClientRect().left - volumeLine.getBoundingClientRect().left <= 0) volumePose.style.left = `0px`
 	if (volumePose.getBoundingClientRect().right - volumeLine.getBoundingClientRect().right >= 0) volumePose.style.left = `${positionVolumePose}px`
 }
 
 function endTouch() {
 	volumePose.style.backgroundColor = `rgb(238, 235, 81)`
-	music.volume = parseInt(volumeInput.value)/100
-	soundFinishBottle.volume = parseInt(volumeInput.value)/100
-	soundFinishLvl.volume = parseInt(volumeInput.value)/100
-	soundBallHit.volume = parseInt(volumeInput.value)/100
 	document.removeEventListener("touchmove", moveTouch)
 }
 
