@@ -88,7 +88,6 @@ getPromise("READ", "LOSEV_ARTEM")
 		})
 		const recordsBack = settingsBack.cloneNode(true)
 		records.appendChild(recordsBack)
-
 		// Закрыть рекорды
 		recordsBack.addEventListener("click", () => {closeWindow (records)}) 
 })
@@ -266,15 +265,18 @@ if (('localStorage' in window) && (window.localStorage!==null)) {
 
 // Старт игры
 function startGame(lvl,amountColors,nextLvl) {
+	arrRecords.sort((a, b) => parseInt(b) - parseInt(a))
 	if (arrRecords.every(e => e !== lvl)) {
 		if (arrRecords.length === 10) {
-			arrRecords.sort((a, b) => parseInt(b) - parseInt(a) )
-			arrRecords.pop()
-			arrRecords.push(lvl)
+			if (arrRecords[9] < lvl) {
+				arrRecords.pop()
+				arrRecords.push(lvl)
+			}	
 		} else {
 			arrRecords.push(lvl)
 		}
 	}
+	
 	getPromise("READ", "LOSEV_ARTEM")
 		.then(value => value.json())
 		.then(getPromise("LOCKGET", "LOSEV_ARTEM", pass))
