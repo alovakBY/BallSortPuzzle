@@ -176,7 +176,10 @@ function moveTouch (e) {
 
 function endTouch() {
 	volumePose.style.backgroundColor = `rgb(238, 235, 81)`
-	
+	music.volume = parseInt(volumeInput.value)/100
+	soundFinishBottle.volume = parseInt(volumeInput.value)/100
+	soundFinishLvl.volume = parseInt(volumeInput.value)/100
+	soundBallHit.volume = parseInt(volumeInput.value)/100
 	document.removeEventListener("touchmove", moveTouch)
 }
 
