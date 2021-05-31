@@ -88,7 +88,7 @@ getPromise("READ", "LOSEV_ARTEM")
 		})
 		const recordsBack = settingsBack.cloneNode(true)
 		records.appendChild(recordsBack)
-		
+
 		// Закрыть рекорды
 		recordsBack.addEventListener("click", () => {closeWindow (records)}) 
 })
@@ -120,6 +120,7 @@ musicSetting.addEventListener("click", (e) => {
 // Настройка ползунка громкости
 
 let shiftX = 0
+let shiftXTouch = 0
 const positionVolumePose = volumeLine.clientWidth - volumePose.clientWidth // расстояние по которому может ходить ползунок
 volumePose.style.left = `${volumeInput.value*positionVolumePose/100}px` // Ставим ползунок в положение, в котором стоит при загрузке input type = range
 // Ставим громкость === значению input
@@ -132,11 +133,15 @@ function start(e) {
 	volumePose.style.backgroundColor = `rgb(238, 183, 81)`
 
 	shiftX = e.pageX - e.target.getBoundingClientRect().x
+	if (e.targetTouches) shiftXTouch = e.targetTouches[0].pageX -  e.target.getBoundingClientRect().x
 	e.target.ondragstart = function() {
 		return false
 	}
 	document.addEventListener("mousemove", move)
 	document.addEventListener("mouseup", end)
+
+	document.addEventListener("touchmove", moveTouch)
+	document.addEventListener("touchend", end)
 }
 
 function move(e) {
@@ -150,14 +155,30 @@ function move(e) {
 	if (volumePose.getBoundingClientRect().right - volumeLine.getBoundingClientRect().right >= 0) volumePose.style.left = `${positionVolumePose}px`
 }
 
+function moveTouch (e) {
+	volumeInput.value = parseInt(volumePose.style.left) / positionVolumePose*100
+	music.volume = volumeInput.value/100
+	soundFinishBottle.volume = volumeInput.value/100
+	soundFinishLvl.volume = volumeInput.value/100
+	soundBallHit.volume = volumeInput.value/100
+	volumePose.style.left = `${e.targetTouches[0].pageX - volumeLine.getBoundingClientRect().x - shiftXTouch}px`
+	if (volumePose.getBoundingClientRect().left - volumeLine.getBoundingClientRect().left <= 0) volumePose.style.left = `0px`
+	if (volumePose.getBoundingClientRect().right - volumeLine.getBoundingClientRect().right >= 0) volumePose.style.left = `${positionVolumePose}px`
+}
+
 function end() {
 	volumePose.style.backgroundColor = `rgb(238, 235, 81)`
 	volumePose.removeEventListener("mousedown", start)
 	document.removeEventListener("mousemove", move)
 	volumePose.addEventListener("mousedown", start)
+
+	volumePose.removeEventListener("touchstart", start)
+	document.removeEventListener("touchmove", moveTouch)
+	volumePose.addEventListener("touchstart", start)
 }
 
 volumePose.addEventListener("mousedown", start)
+volumePose.addEventListener("touchstart", start)
 
 
 
@@ -274,7 +295,7 @@ function startGame(lvl,amountColors,nextLvl) {
 // Функция отрисовки пробирок и шариков
 	maxLengthReturnArr = 5
 	coupleOfBootles = [] // Массив для сравнения наших
-	returnArr = [] // Массив элесентов для "шага назад"
+	returnArr = [] // Массив элементов для "шага назад"
 	let amountBottle // Количество пробирок
 	const randomColor = []
 	returnBtn.querySelector("span").textContent = maxLengthReturnArr
