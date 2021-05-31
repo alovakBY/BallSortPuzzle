@@ -5,7 +5,6 @@ const buttonRecords = document.querySelector(".recordsBtn") // Кнопка ре
 const settings = document.querySelector(".settings") // Контейнер настроек
 const settingsBack = document.querySelector(".settings--backBtn") // Кнопка "назад" в меню настроек
 const records = document.querySelector(".records") // Контейнер рекордов
-let recordsBack 
 const opacity08 = document.querySelector(".opacity08") // Контейнер class = "opacity0.8"
 const opacity = document.querySelector(".opacity") // Контейнер class = "opacity0.8"
 const container = document.querySelector(".container") //Контейнер class = "container"
@@ -22,6 +21,37 @@ const volumePose = document.querySelector(".settings--volume--checkbox--pose") /
 const musicTrackList = ["./sound/soundTrack/bensound-memories.mp3", "./sound/soundTrack/bensound-ukulele.mp3","./sound/soundTrack/bensound-cute.mp3"] // трек-лист
 const pass = "alovak"
 let arrRecords = []
+let shiftX = 0
+let shiftXTouch = 0
+const positionVolumePose = volumeLine.clientWidth - volumePose.clientWidth // расстояние по которому может ходить ползунок
+
+const restartBtn = document.querySelector(".startGame-navigation-restart") // Кнопка рестарта
+const returnBtn = document.querySelector(".startGame-navigation-back") // Кнопка шаг назад
+const windowGame = document.querySelector(".startGame") // Окно игры
+const windowMainMenu = document.querySelector(".main") // Окно главного меню
+const windowGameToMenu = document.querySelector(".startGame-navigation-mainMenu") // Кнопка "Главное меню"
+const windowGameToMenuBurger = document.querySelector(".startGame-navigation-mainMenu-burger") // Кнопка-бургер "Главное меню"
+const windowGameSettings = document.querySelector(".startGame-navigation-settings") // Кнопка "Настройки"
+const windowGameSettingsBurger = document.querySelector(".startGame-navigation-settings-burger") // Кнопка-бургер "Настройки"
+
+const levelBoard = document.querySelector(".startGame-game-lvl") // Котейнер текущего уровня
+const bottles = document.querySelector(".startGame-game-bottles") // Контейнер, где находятся наши пробирки
+const confetti = document.querySelector(".confetti")// Конфетти
+let ballInTheAir = false
+let lvl = 1 // Стартовый уровень
+let amountColors = 2 // Количество цветов при старте
+let nextLvl = 1 
+let coupleOfBootles // Массив, в который мы будем пушить две пробирки для сравнения
+let returnArr = []
+let maxLengthReturnArr // Массив, в который будут записываться пробирки для кнопки "шаг назад"
+
+volumePose.style.left = `${volumeInput.value*positionVolumePose/100}px` // Ставим ползунок в положение, в котором стоит при загрузке input type = range
+
+// Ставим громкость === значению input
+music.volume = volumeInput.value/100 
+soundFinishBottle.volume = volumeInput.value/100
+soundFinishLvl.volume = volumeInput.value/100
+soundBallHit.volume = volumeInput.value/100
 
 buttonStartGame.textContent = "Играть"
 
@@ -75,58 +105,7 @@ function sounds(sound) {
 	}
 }
 
-
-getPromise("READ", "LOSEV_ARTEM")
-	.then(value => value.json())
-	.then(data => {
-		arrRecords = JSON.parse(data.result)
-		arrRecords.sort((a, b) => parseInt(b) - parseInt(a) )
-		arrRecords.forEach((e,i) => {
-			const div = document.createElement("div")
-			div.textContent = `${i+1} место: ${e} уровень`
-			records.appendChild(div)
-		})
-		const recordsBack = settingsBack.cloneNode(true)
-		records.appendChild(recordsBack)
-		// Закрыть рекорды
-		recordsBack.addEventListener("click", () => {closeWindow (records)}) 
-})
-
-
-
-// Открыть настройки
-buttonSettings.addEventListener("click", () => {openWindow(settings)})
-
-// Закрыть настройки
-settingsBack.addEventListener("click", () => {closeWindow (settings)}) 
-
-// Открыть рекорды
-buttonRecords.addEventListener("click", () => {openWindow(records)})
-
-
-
-// Вкл./Выкл. музыки
-musicSetting.addEventListener("click", (e) => {
-	if(e.target.tagName !== "INPUT") return
-	if (!musicSetting.querySelector("input").checked) {
-		music.pause()
-	} else {
-		nextTrack(Math.floor(Math.random()*musicTrackList.length)) // Играет случайный трек из массива musicTrackList
-	}
-})
-
-
 // Настройка ползунка громкости
-
-let shiftX = 0
-let shiftXTouch = 0
-const positionVolumePose = volumeLine.clientWidth - volumePose.clientWidth // расстояние по которому может ходить ползунок
-volumePose.style.left = `${volumeInput.value*positionVolumePose/100}px` // Ставим ползунок в положение, в котором стоит при загрузке input type = range
-// Ставим громкость === значению input
-music.volume = volumeInput.value/100 
-soundFinishBottle.volume = volumeInput.value/100
-soundFinishLvl.volume = volumeInput.value/100
-soundBallHit.volume = volumeInput.value/100
 
 function start(e) {
 	volumePose.style.backgroundColor = `rgb(238, 183, 81)`
@@ -180,89 +159,6 @@ function endTouch() {
 }
 
 
-volumePose.addEventListener("touchstart", startTouch)
-volumePose.addEventListener("mousedown", start)
-
-
-
-
-
-
-
-//
-// Код для окна игры
-//
-
-
-const restartBtn = document.querySelector(".startGame-navigation-restart") // Кнопка рестарта
-const returnBtn = document.querySelector(".startGame-navigation-back") // Кнопка шаг назад
-const windowGame = document.querySelector(".startGame") // Окно игры
-const windowMainMenu = document.querySelector(".main") // Окно главного меню
-const windowGameToMenu = document.querySelector(".startGame-navigation-mainMenu") // Кнопка "Главное меню"
-const windowGameToMenuBurger = document.querySelector(".startGame-navigation-mainMenu-burger") // Кнопка-бургер "Главное меню"
-const windowGameSettings = document.querySelector(".startGame-navigation-settings") // Кнопка "Настройки"
-const windowGameSettingsBurger = document.querySelector(".startGame-navigation-settings-burger") // Кнопка-бургер "Настройки"
-
-const levelBoard = document.querySelector(".startGame-game-lvl") // Котейнер текущего уровня
-const bottles = document.querySelector(".startGame-game-bottles") // Контейнер, где находятся наши пробирки
-const confetti = document.querySelector(".confetti")// Конфетти
-let ballInTheAir = false
-let lvl = 1 // Стартовый уровень
-let amountColors = 2 // Количество цветов при старте
-let nextLvl = 1 
-let coupleOfBootles // Массив, в который мы будем пушить две пробирки для сравнения
-let returnArr = []
-let maxLengthReturnArr // Массив, в который будут записываться пробирки для кнопки "шаг назад"
-
-
-
-// Если есть локальное хранилище - создаем кнопку "Уровни", при нажатии на которую можно выбрать на каком уровне из пройденных хотим сейчас играть
-if (('localStorage' in window) && (window.localStorage!==null)) {
-	let arrLevels
-	const levelsBtn = document.createElement("div")
-	const levelsBack = settingsBack.cloneNode(true)
-	settings.insertAdjacentHTML('afterend', '<div class="levels"></div>')
-	const levels = document.querySelector(".levels")
-	const levelsLevels = document.createElement("div")
-	levelsLevels.className = "levels--levels"
-	levels.appendChild(levelsLevels)
-	levelsBtn.textContent = "Уровни"
-	levelsBtn.className = "main--menu levelsBtn"
-	windowMainMenu.appendChild(levelsBtn)
-	levelsBtn.addEventListener("click", () => {
-		if (localStorage["BallSortPuzzle"]) {
-			while (levelsLevels.firstChild) {
-				levelsLevels.removeChild(levelsLevels.firstChild);
-			}
-			arrLevels = JSON.parse(localStorage["BallSortPuzzle"])
-			for (let i = 0; i < arrLevels.length; i++) {
-				const lvlDiv = document.createElement("div")
-				lvlDiv.textContent = i + 1
-				lvlDiv.className = "levels--levels-level"
-				levelsLevels.appendChild(lvlDiv)
-			}
-		}
-		openWindow(levels)
-	})
-
-	levelsBack.addEventListener("click", () => closeWindow(levels))
-	
-	levels.appendChild(levelsBack)
-
-	levelsLevels.addEventListener("click", (e) => {
-		if (e.target.className === "levels--levels") return
-		closeWindow(levels)
-		lvl = arrLevels[parseInt(e.target.textContent)-1].lvl
-		amountColors = arrLevels[parseInt(e.target.textContent)-1].amountColors
-		nextLvl = arrLevels[parseInt(e.target.textContent)-1].nextLvl
-		buttonStartGame.textContent = "Продолжить"
-		windowGame.style.left = `0%`
-		windowMainMenu.style.left = `-100%`
-		startGame(lvl,amountColors,nextLvl)
-	})
-}
-
-
 // Старт игры
 function startGame(lvl,amountColors,nextLvl) {
 	arrRecords.sort((a, b) => parseInt(b) - parseInt(a))
@@ -301,7 +197,7 @@ function startGame(lvl,amountColors,nextLvl) {
 	}
 
 
-// Функция отрисовки пробирок и шариков
+// Отрисовка пробирок и шариков
 	maxLengthReturnArr = 5
 	coupleOfBootles = [] // Массив для сравнения наших
 	returnArr = [] // Массив элементов для "шага назад"
@@ -474,6 +370,92 @@ function ballKick(ball) {
 }
 
 
+// Берем данные с сервера и записываем в "Рекорды"
+getPromise("READ", "LOSEV_ARTEM")
+	.then(value => value.json())
+	.then(data => {
+		arrRecords = JSON.parse(data.result)
+		arrRecords.sort((a, b) => parseInt(b) - parseInt(a) )
+		arrRecords.forEach((e,i) => {
+			const div = document.createElement("div")
+			div.textContent = `${i+1} место: ${e} уровень`
+			records.appendChild(div)
+		})
+		const recordsBack = settingsBack.cloneNode(true)
+		records.appendChild(recordsBack)
+		// Закрыть рекорды
+		recordsBack.addEventListener("click", () => {closeWindow (records)}) 
+})
+
+
+// Открыть настройки
+buttonSettings.addEventListener("click", () => {openWindow(settings)})
+
+// Закрыть настройки
+settingsBack.addEventListener("click", () => {closeWindow (settings)}) 
+
+// Открыть рекорды
+buttonRecords.addEventListener("click", () => {openWindow(records)})
+
+// Вкл./Выкл. музыки
+musicSetting.addEventListener("click", (e) => {
+	if(e.target.tagName !== "INPUT") return
+	if (!musicSetting.querySelector("input").checked) {
+		music.pause()
+	} else {
+		nextTrack(Math.floor(Math.random()*musicTrackList.length)) // Играет случайный трек из массива musicTrackList
+	}
+})
+
+volumePose.addEventListener("touchstart", startTouch)
+volumePose.addEventListener("mousedown", start)
+
+// Если есть локальное хранилище - создаем кнопку "Уровни", при нажатии на которую можно выбрать на каком уровне из пройденных хотим сейчас играть
+if (('localStorage' in window) && (window.localStorage!==null)) {
+	let arrLevels
+	const levelsBtn = document.createElement("div")
+	const levelsBack = settingsBack.cloneNode(true)
+	settings.insertAdjacentHTML('afterend', '<div class="levels"></div>')
+	const levels = document.querySelector(".levels")
+	const levelsLevels = document.createElement("div")
+	levelsLevels.className = "levels--levels"
+	levels.appendChild(levelsLevels)
+	levelsBtn.textContent = "Уровни"
+	levelsBtn.className = "main--menu levelsBtn"
+	windowMainMenu.appendChild(levelsBtn)
+	levelsBtn.addEventListener("click", () => {
+		if (localStorage["BallSortPuzzle"]) {
+			while (levelsLevels.firstChild) {
+				levelsLevels.removeChild(levelsLevels.firstChild);
+			}
+			arrLevels = JSON.parse(localStorage["BallSortPuzzle"])
+			for (let i = 0; i < arrLevels.length; i++) {
+				const lvlDiv = document.createElement("div")
+				lvlDiv.textContent = i + 1
+				lvlDiv.className = "levels--levels-level"
+				levelsLevels.appendChild(lvlDiv)
+			}
+		}
+		openWindow(levels)
+	})
+
+	levelsBack.addEventListener("click", () => closeWindow(levels))
+	
+	levels.appendChild(levelsBack)
+
+	levelsLevels.addEventListener("click", (e) => {
+		if (e.target.className === "levels--levels") return
+		closeWindow(levels)
+		lvl = arrLevels[parseInt(e.target.textContent)-1].lvl
+		amountColors = arrLevels[parseInt(e.target.textContent)-1].amountColors
+		nextLvl = arrLevels[parseInt(e.target.textContent)-1].nextLvl
+		buttonStartGame.textContent = "Продолжить"
+		windowGame.style.left = `0%`
+		windowMainMenu.style.left = `-100%`
+		startGame(lvl,amountColors,nextLvl)
+	})
+}
+
 // Кнопка "Играть"
 buttonStartGame.addEventListener("click", (e) => {
 	if (e.target.textContent === "Играть") {
@@ -494,7 +476,6 @@ buttonStartGame.addEventListener("click", (e) => {
 	windowMainMenu.style.left = `-100%`
 }) 
 
-
 // Кнопка рестарта раунда
 restartBtn.addEventListener("click", () => startGame(lvl,amountColors,nextLvl)) 
 
@@ -508,8 +489,10 @@ windowGameToMenuBurger.addEventListener("click", () => {
 	windowMainMenu.style.left = `0%`
 })
 
+// Открыть настройки 
 windowGameSettings.addEventListener("click", () => {openWindow(settings)})
 
+// Открыть настройки бургер-кнопкой
 windowGameSettingsBurger.addEventListener("click", () => {openWindow(settings)})
 
 // Кнопка "шаг назад"
@@ -527,7 +510,7 @@ returnBtn.addEventListener("click", () => {
 	})
 })
 
-
+// Клик по пробиркам
 bottles.addEventListener("click", (e) => {	
 	// Если клик не по пробирке, то return
 	if(!e.target.closest(".bottle")) return 
