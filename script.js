@@ -170,7 +170,7 @@ function moveTouch (e) {
 	volumeInput.value = parseInt(volumePose.style.left) / positionVolumePose*100
 	console.log(volumeInput.value)
 	music.volume = parseInt(volumeInput.value)/100
-	spmus.textContent = `Музыка ${music.volume}`
+	//spmus.textContent = `Музыка ${music.volume}`
 	soundFinishBottle.volume = parseInt(volumeInput.value)/100
 	soundFinishLvl.volume = parseInt(volumeInput.value)/100
 	soundBallHit.volume = parseInt(volumeInput.value)/100 
@@ -182,6 +182,7 @@ function moveTouch (e) {
 function endTouch() {
 	volumePose.style.backgroundColor = `rgb(238, 235, 81)`
 	document.removeEventListener("touchmove", moveTouch)
+	spmus.textContent = `Музыка ${music.volume}`
 }
 
 
