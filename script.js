@@ -131,17 +131,18 @@ soundBallHit.volume = volumeInput.value/100
 
 function start(e) {
 	volumePose.style.backgroundColor = `rgb(238, 183, 81)`
-
-	shiftX = e.pageX - e.target.getBoundingClientRect().x
-	if (e.targetTouches) shiftXTouch = e.targetTouches[0].pageX -  e.target.getBoundingClientRect().x
+	if (e.targetTouches) {
+		shiftXTouch = e.targetTouches[0].pageX -  e.target.getBoundingClientRect().x
+		document.addEventListener("touchmove", moveTouch)
+		document.addEventListener("touchend", endTouch)
+	} else {
+		shiftX = e.pageX - e.target.getBoundingClientRect().x
+		document.addEventListener("mousemove", move)
+		document.addEventListener("mouseup", end)
+	}
 	e.target.ondragstart = function() {
 		return false
 	}
-	document.addEventListener("mousemove", move)
-	document.addEventListener("mouseup", end)
-
-	document.addEventListener("touchmove", moveTouch)
-	document.addEventListener("touchend", end)
 }
 
 function move(e) {
@@ -155,6 +156,13 @@ function move(e) {
 	if (volumePose.getBoundingClientRect().right - volumeLine.getBoundingClientRect().right >= 0) volumePose.style.left = `${positionVolumePose}px`
 }
 
+function end() {
+	volumePose.style.backgroundColor = `rgb(238, 235, 81)`
+	volumePose.removeEventListener("mousedown", start)
+	document.removeEventListener("mousemove", move)
+	volumePose.addEventListener("mousedown", start)
+}
+
 function moveTouch (e) {
 	volumeInput.value = parseInt(volumePose.style.left) / positionVolumePose*100
 	music.volume = parseInt(volumeInput.value)/100
@@ -166,15 +174,10 @@ function moveTouch (e) {
 	if (volumePose.getBoundingClientRect().right - volumeLine.getBoundingClientRect().right >= 0) volumePose.style.left = `${positionVolumePose}px`
 }
 
-function end() {
+function endTouch() {
 	volumePose.style.backgroundColor = `rgb(238, 235, 81)`
-	volumePose.removeEventListener("mousedown", start)
-	document.removeEventListener("mousemove", move)
-	volumePose.addEventListener("mousedown", start)
-
-	volumePose.removeEventListener("touchstart", start)
+	
 	document.removeEventListener("touchmove", moveTouch)
-	volumePose.addEventListener("touchstart", start)
 }
 
 volumePose.addEventListener("mousedown", start)
